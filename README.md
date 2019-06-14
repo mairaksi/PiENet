@@ -25,6 +25,6 @@ Scipy
 `python generate.py [input_file/input_list/input_dir] target_dir` : Same options as Method 2, output to `target_dir`.
 
 ## Reference:
-[1] M. Airaksinen, J. Juvela, P. Alku and O. Räsänen: "Data augmentation strategies for neural F0 estimation", Proc. ICASSP 2019
+[1] M. Airaksinen, L. Juvela, P. Alku and O. Räsänen: "Data augmentation strategies for neural F0 estimation", Proc. ICASSP 2019
 
 
