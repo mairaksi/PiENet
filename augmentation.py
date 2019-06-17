@@ -3,22 +3,25 @@ from __future__ import division
 __author__ = "Manu Airaksinen, manu.airaksinen@aalto.fi"
 
 import os
-import numpy as np
-
-import soundfile
 import sys
+import numpy as np
+import scipy.io.wavfile as wavfile
 
 
-def load_noise_samples(wav_scp='noiselist.scp'):
-    if wav_scp == None:
+
+def load_noise_samples(noise_wav_scp='noiselist.scp'):
+    if noise_wav_scp == None:
         return None
 
-    with open(wav_scp) as wavlist:
+    with open(noise_wav_scp) as wavlist:
         wavs = wavlist.read().splitlines()
 
     noise_samples = []
     for wav in wavs:
-        y, _ = soundfile.read(wav)
+        fs, y = wavfile.read(wav)
+        y = np.float32(y/(2**15))
+        if fs != 16000:
+            raise Exception('fs needs to be 16 kHz!')
         noise_samples.append(y)
     return noise_samples
 

@@ -5,9 +5,9 @@ import os
 
 import numpy as np
 import tensorflow as tf
+import scipy.io.wavfile as wavfile
 
 import model_fundf as model
-import soundfile
 import augmentation
 import sp_module as sp
 
@@ -50,8 +50,8 @@ def train_model(train_wav_list,train_f0_list,test_wav_list,test_f0_list,model_na
     optim = tf.train.AdamOptimizer(learning_rate=1e-4,beta1=0.9,beta2=0.999).minimize(loss, var_list=[theta])
    
     # Add text file containing paths to augmentation noise samplesa
-    # If wav_scp = None, uses white noise as additive noise augmentation
-    noise_samples = augmentation.load_noise_samples(wav_scp=None)  
+    # If noise_wav_scp = None, uses white noise as additive noise augmentation
+    noise_samples = augmentation.load_noise_samples(noise_wav_scp=None)  
 
     with tf.Session() as sess:
 
@@ -77,7 +77,9 @@ def train_model(train_wav_list,train_f0_list,test_wav_list,test_f0_list,model_na
                 wfile = train_wav_list[i]
                 f0file = train_f0_list[i]
 
-                y, _ = soundfile.read(wfile)
+                _, y = wavfile.read(wfile)
+                y = np.float32(y/(2**15))
+
                 y_noise = augmentation.add_noise_file(y,noise_samples)
 
                 f0 = np.fromfile(f0file,dtype=np.float32)
@@ -101,7 +103,9 @@ def train_model(train_wav_list,train_f0_list,test_wav_list,test_f0_list,model_na
                 wfile = test_wav_list[i]
                 f0file = test_f0_list[i]
 
-                y, _ = soundfile.read(wfile)
+                _, y = wavfile.read(wfile)
+                y = np.float32(y/(2**15))
+
                 f0 = np.fromfile(f0file,dtype=np.float32)
                 if downsample_f0:
                     f0 = f0[0::2]
@@ -126,11 +130,11 @@ def train_model(train_wav_list,train_f0_list,test_wav_list,test_f0_list,model_na
     
 
 if __name__ == "__main__":
-    wav_scp = 'wavs.scp'
+    wav_scp = 'train_wavs.scp'
     with open(wav_scp) as wavlist:
         wavs = wavlist.read().splitlines()
 
-    f0_scp = 'f0s.scp'
+    f0_scp = 'train_f0s.scp'
     with open(f0_scp) as f0list:
         f0s = f0list.read().splitlines()
     

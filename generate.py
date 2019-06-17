@@ -5,14 +5,15 @@ __author__ = "Manu Airaksinen, manu.airaksinen@aalto.fi"
 
 import os
 import sys
+import glob
 #os.environ['CUDA_VISIBLE_DEVICES'] = '' # Uncommment to force CPU
 import numpy as np
 import tensorflow as tf
+import scipy.io.wavfile as wavfile
 
 import model_fundf as model
 import sp_module as sp
-import soundfile
-import glob
+
 
 
 _FLOATX = tf.float32 
@@ -53,8 +54,9 @@ def generate(wav_list, target_dir, model_name):
         print("Model restored.")
 
         for wfile in wav_list:
+                fs, y = wavfile.read(wfile)
+                y = np.float32(y/(2**15))
 
-                y, fs = soundfile.read(wfile)
                 if fs != 16000:
                     raise Exception('fs needs to be 16 kHz!')
 
