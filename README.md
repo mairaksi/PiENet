@@ -10,6 +10,8 @@ Distributed under the Apache 2.0 license. See LICENSE for further details.
 * Scipy
 
 ## How to use pre-trained model:
+The pre-trained model is trained for speech sampled at 16 kHz, with 10 ms frame shift and a F0 range of 50 to 500 Hz.
+
 ### Method 1:
 * `python generate.py` : Perform pitch estimation to the `.wav` files specified in the text file `test_wavs.scp` and outputs the `.f0` files to the default folder located at `PRJDIR/f0/`.
 
@@ -24,7 +26,7 @@ Distributed under the Apache 2.0 license. See LICENSE for further details.
 * `python generate.py [input_file/input_list/input_dir] target_dir` : Same options as Method 2, output to `target_dir`.
 
 ## How to train your own model:
-* Supply list of train data files in `train_wavs.scp` for input data, and the corresponding target F0s in `train_f0s.scp` (datatype raw float32 for F0 files). Note that the number of frames in the F0 files much match the present method's framing convention (Nframes = ceil(wav_length/hop), signal zero-padded with winlen/2 samples from start and beginning).
+* Supply list of train data files in `train_wavs.scp` for input data, and the corresponding target F0s in `train_f0s.scp` (datatype raw float32 for F0 files). Note that the number of frames in the F0 files must match the present method's framing convention (Nframes = ceil(wav_length/hop), signal zero-padded with winlen/2 samples from start and beginning).
 
 * If you want to use additive noise augmentation with sampled noise from a database, supply the file paths in `noiselist.scp` and edit the code in `train.py` line 54 to `noise_samples = augmentation.load_noise_samples(noise_wav_scp=noiselist.scp)`.
 
@@ -33,5 +35,7 @@ Distributed under the Apache 2.0 license. See LICENSE for further details.
 
 ## Reference: 
 [1] M. Airaksinen, L. Juvela, P. Alku and O. Räsänen: "Data augmentation strategies for neural F0 estimation", Proc. ICASSP 2019
+
+Available: https://ieeexplore.ieee.org/document/8683041
 
 
