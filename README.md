@@ -1,6 +1,10 @@
 # PiENet
 Pitch estimation network (PiENet) for noise-robust neural F0 estimation of speech signals. The best performing model from [1] ('GTE-AUG') supplied as a pre-trained model. The model was trained using additional and convolutional noise augmentation, as well as vocoder-based ground truth enhancement (see publication for further details).
 
+Article found in:
+https://ieeexplore.ieee.org/document/8683041,
+https://www.researchgate.net/publication/331012502_Data_Augmentation_Strategies_for_Neural_Network_F0_Estimation
+
 ## Licence
 Distributed under the Apache 2.0 license. See LICENSE for further details.
 
@@ -13,14 +17,14 @@ Distributed under the Apache 2.0 license. See LICENSE for further details.
 The pre-trained model is trained for speech sampled at 16 kHz, with 10 ms frame shift and a F0 range of 50 to 500 Hz.
 
 ### Method 1:
-* `python generate.py` : Perform pitch estimation to the `.wav` files specified in the text file `test_wavs.scp` and outputs the `.f0` files to the default folder located at `PRJDIR/f0/`.
+* `python generate.py` : Perform pitch estimation to the `.wav` files specified in the text file `test_wavs.scp` and outputs the `.f0` files to the default folder located at `./f0/`.
 
 ### Method 2:
-* `python generate.py input_file.wav` : Perform pitch estimation to `input_file.wav`, output to `PRJDIR/f0/`.
+* `python generate.py input_file.wav` : Perform pitch estimation to `input_file.wav`, output to `./f0/`.
 
-* `python generate.py input_list.scp` : Perform pitch estimation to all files specified in the text file `input_list.scp`, output to `PRJDIR/f0/`.
+* `python generate.py input_list.scp` : Perform pitch estimation to all files specified in the text file `input_list.scp`, output to `./f0/`.
 
-* `python generate.py input_dir` : Perform pitch estimation to all `.wav` files found in the folder `input_dir`, output to `PRJDIR/f0/`.
+* `python generate.py input_dir` : Perform pitch estimation to all `.wav` files found in the folder `input_dir`, output to `./f0/`.
 
 ### Method 3:
 * `python generate.py [input_file/input_list/input_dir] target_dir` : Same options as Method 2, output to `target_dir`.
@@ -36,6 +40,7 @@ The pre-trained model is trained for speech sampled at 16 kHz, with 10 ms frame 
 ## Reference: 
 [1] M. Airaksinen, L. Juvela, P. Alku and O. Räsänen: "Data augmentation strategies for neural F0 estimation", Proc. ICASSP 2019
 
-Available: https://ieeexplore.ieee.org/document/8683041
+Available: https://ieeexplore.ieee.org/document/8683041,
+https://www.researchgate.net/publication/331012502_Data_Augmentation_Strategies_for_Neural_Network_F0_Estimation
 
 
