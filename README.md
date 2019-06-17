@@ -2,8 +2,8 @@
 Pitch estimation network (PiENet) for noise-robust neural F0 estimation of speech signals. The best performing model from [1] ('GTE-AUG') supplied as a pre-trained model. The model was trained using additional and convolutional noise augmentation, as well as vocoder-based ground truth enhancement (see publication for further details).
 
 Article found in:
-https://ieeexplore.ieee.org/document/8683041,
-https://www.researchgate.net/publication/331012502_Data_Augmentation_Strategies_for_Neural_Network_F0_Estimation
+[IEEE Xplore](https://ieeexplore.ieee.org/document/8683041),
+[ResearchGate](https://www.researchgate.net/publication/331012502_Data_Augmentation_Strategies_for_Neural_Network_F0_Estimation)
 
 ## Licence
 Distributed under the Apache 2.0 license. See LICENSE for further details.
@@ -40,7 +40,7 @@ The pre-trained model is trained for speech sampled at 16 kHz, with 10 ms frame 
 ## Reference: 
 [1] M. Airaksinen, L. Juvela, P. Alku and O. Räsänen: "Data augmentation strategies for neural F0 estimation", Proc. ICASSP 2019
 
-Available: https://ieeexplore.ieee.org/document/8683041,
-https://www.researchgate.net/publication/331012502_Data_Augmentation_Strategies_for_Neural_Network_F0_Estimation
+Available: [IEEE Xplore](https://ieeexplore.ieee.org/document/8683041),
+[ResearchGate](https://www.researchgate.net/publication/331012502_Data_Augmentation_Strategies_for_Neural_Network_F0_Estimation)
 
 
