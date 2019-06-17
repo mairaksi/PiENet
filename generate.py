@@ -69,7 +69,8 @@ def generate(wav_list, target_dir, model_name):
 
                 basename = os.path.basename(os.path.splitext(wfile)[0])
                 target_file = target_dir + '/' + basename + '.f0'
-                f0_gen_np.tofile(target_file)
+                #f0_gen_np.tofile(target_file) # Use this to write float32 binary files
+                np.savetxt(target_file,f0_gen_np,fmt='%.2f') # Use this to write ASCII output files
 
 
 if __name__=="__main__":
