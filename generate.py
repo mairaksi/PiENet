@@ -10,6 +10,7 @@ import glob
 import numpy as np
 import tensorflow as tf
 import scipy.io.wavfile as wavfile
+import scipy.signal
 
 import model_fundf as model
 import sp_module as sp
@@ -56,10 +57,10 @@ def generate(wav_list, target_dir, model_name):
         for wfile in wav_list:
                 fs, y = wavfile.read(wfile)
                 y = np.float32(y/(2**15))
-
+                
                 if fs != 16000:
-                    raise Exception('fs needs to be 16 kHz!')
-
+                    y = scipy.signal.resample(y,int(len(y)/(fs/16000)))
+           
                 input_frames = np.reshape(sp.get_frames(y,winlen,hop),[1,-1,winlen])
  
                 f0_act_np = sess.run([f0_activations], feed_dict={input_var: input_frames})
