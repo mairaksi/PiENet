@@ -16,7 +16,7 @@ pip install -e ".[audio]"       # + soundfile, for flac/ogg/non-PCM wav input
 pip install -e ".[dev]"         # + pytest, ruff
 ```
 
-Python 3.9 or newer, PyTorch 2.3 or newer. CPU, CUDA and Apple MPS all work; the device is selected automatically.
+Python 3.9 or newer, PyTorch 2.4.1 or newer. CPU, CUDA and Apple MPS all work; the device is selected automatically.
 
 ## Usage
 
@@ -133,7 +133,7 @@ On the bundled utterance the decoded F0 contour is **identical**, frame for fram
 To re-derive the conversion yourself:
 
 ```bash
-pip install "tensorflow-cpu>=2.12"
+pip install "tensorflow>=2.18"
 python scripts/tf1_reference.py                     # regenerate the reference
 python scripts/convert_tf_checkpoint.py \
     --tf-checkpoint legacy/saved_models/gtaug_best.ckpt \
