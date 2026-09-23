@@ -2,16 +2,16 @@
 
 Pitch estimation network (PiENet) for noise-robust neural F0 estimation of speech signals.
 
-The best performing model from [1] (`GTE-AUG`) is supplied as a pre-trained model. It was trained using additive and convolutional noise augmentation as well as vocoder-based ground truth enhancement (see the publication for details).
+The best performing model from Airaksinen et al. (2019) [1] (`GTE-AUG`) is supplied as a pre-trained model. It was trained using additive and convolutional noise augmentation as well as vocoder-based ground truth enhancement (see the publication for details).
 
-> **Version 2.0 is a PyTorch port.** The original TensorFlow 1 implementation is preserved under [`legacy/`](legacy/). The pre-trained weights were converted, not retrained: the PyTorch model reproduces the TensorFlow model's F0 output exactly on the bundled test utterance (see [Verification](#verification)).
+> **Version 2.0 is a PyTorch port made using Claude AI (Opus 5.0).** The original TensorFlow 1 implementation is preserved under [`legacy/`](legacy/). The pre-trained weights were converted, not retrained: the PyTorch model reproduces the original TensorFlow 1 model's F0 output exactly (see [Verification](#verification)).
 
 Article: [IEEE Xplore](https://ieeexplore.ieee.org/document/8683041) · [ResearchGate](https://www.researchgate.net/publication/331012502_Data_Augmentation_Strategies_for_Neural_Network_F0_Estimation)
 
 ## Installation
 
 ```bash
-pip install -e .                # core: torch, numpy, scipy
+pip install -e .                # core: torch, numpy, scipy dependencies
 pip install -e ".[audio]"       # + soundfile, for flac/ogg/non-PCM wav input
 pip install -e ".[dev]"         # + pytest, ruff
 ```
@@ -37,8 +37,9 @@ Options worth knowing:
 | `-f, --format` | `ascii` (default, one value per line), `f32` (raw float32), `npy`, `csv` (time, f0, voicing) |
 | `--voicing-threshold` | Voice a frame when `1 - p(unvoiced) >= T` instead of taking the arg-max. Lets you trade voiced/unvoiced errors without retraining. |
 | `--interpolate` | Parabolic sub-bin refinement — finer than the 350-bin grid (~0.66 % steps). |
+| `--postprocess` | 3-tap median filtering to the F0 contour. Disregards voicing edge cases and reduces gross prediction errors on first and last voiced frames.|
 | `--chunk-frames` | Bound memory on very long recordings. Chunking is exact, not approximate. |
-| `--device` | `cpu`, `cuda`, `mps`, … |
+| `--device` | `cpu`, `cuda`, `mps` |
 
 The original script interface still works:
 
@@ -84,7 +85,7 @@ f0, voicing = activations_to_f0(torch.softmax(logits, -1).numpy())
 
 | | |
 | --- | --- |
-| Input | Framed raw waveform, 512-sample (32 ms) window, 160-sample (10 ms) hop |
+| Input | Framed raw waveform, 16kHz sampling rate, 512-sample (32 ms) window, 160-sample (10 ms) hop |
 | Trunk | 1×1 input projection → 8 gated dilated convolution blocks (width 5, dilations 1-2-4-8-1-2-4-8, 128 channels) with residual and skip connections |
 | Output | Two width-5 convolutions → softmax over 351 classes: 350 log-spaced F0 bins from 50 to 500 Hz, plus one "unvoiced" class |
 | Size | 2,256,351 parameters (9 MB) |
@@ -151,15 +152,12 @@ Behaviour-preserving by default; the differences are deliberate and listed here.
 **Fixed**
 
 * Integer PCM is now normalised by its own full scale. The original divided everything by `2**15`, so 24- and 32-bit files came out thousands of times too loud.
-* Input dropout is now actually applied during training. The original built the training graph with `training=False`, so its dropout layer was a no-op — the published model was effectively trained without it.
-* `add_noise_file` modified the caller's waveform in place and used `noise_samples == None` for its check; augmentation now returns a new array.
-* A noise recording shorter than the utterance raised in `np.random.randint`; it is now looped.
 * Resampling uses a polyphase filter (`resample_poly`) rather than `scipy.signal.resample`, avoiding the circular-convolution artefacts of the Fourier method at signal edges.
 
 **New**
 
 * Minibatched training with length padding masked out of the loss, gradient clipping, mixed precision, resumable checkpoints, and validation metrics (frame accuracy, voicing error, gross pitch error) instead of loss alone.
-* `--voicing-threshold` and `--interpolate` decoding options.
+* `--voicing-threshold`, `--interpolate`, and `--postprocess` decoding options.
 * `csv`, `npy` and raw-`float32` output formats.
 * Checkpoints carry their own config, so a model file is self-describing.
 * An importable Python API and a `pienet` console command.
@@ -191,8 +189,12 @@ generate.py, train.py  wrappers for the original command lines
 
 Distributed under the Apache 2.0 license. See [LICENSE](LICENSE) for further details.
 
+The example file `arctic_a0001.wav` is taken from the CMU ARCTIC dataset [2], distributed under a [free software license](http://www.festvox.org/cmu_arctic/cmu_arctic_report.pdf). 
+
 ## Reference
 
 [1] M. Airaksinen, L. Juvela, P. Alku and O. Räsänen: "Data augmentation strategies for neural F0 estimation", Proc. ICASSP 2019.
-
 Available: [IEEE Xplore](https://ieeexplore.ieee.org/document/8683041), [ResearchGate](https://www.researchgate.net/publication/331012502_Data_Augmentation_Strategies_for_Neural_Network_F0_Estimation)
+
+[2] J. Kominek, A.W. Black (2004) The CMU Arctic speech databases. Proc. 5th ISCA Workshop on Speech Synthesis (SSW 5), pp. 223–224.
+Available: [Article](https://www.isca-archive.org/ssw_2004/kominek04b_ssw.html), [Dataset](http://www.festvox.org/cmu_arctic/)
