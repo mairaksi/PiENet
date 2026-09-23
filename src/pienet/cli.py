@@ -102,6 +102,7 @@ def cmd_estimate(args: argparse.Namespace) -> int:
                 return_voicing=True,
                 voicing_threshold=args.voicing_threshold,
                 interpolate=args.interpolate,
+                postprocess=args.postprocess,
             )
         except Exception as exc:  # keep going through a bad file in a long list
             failures += 1
@@ -214,6 +215,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="output format (default: ascii, one value per line)",
     )
     est.add_argument("--suffix", default=None, help="override the output suffix")
+    est.add_argument(
+        "--postprocess",
+        action="store_true",
+        help="3-tap median smoothing to the F0 contour. Treats edges as special cases.",
+    )
+ 
     est.add_argument(
         "--voicing-threshold",
         type=float,

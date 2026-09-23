@@ -124,6 +124,7 @@ class F0Estimator:
         return_voicing: bool = False,
         voicing_threshold: Optional[float] = None,
         interpolate: bool = False,
+        postprocess: bool = False,
     ) -> Union[np.ndarray, Tuple[np.ndarray, np.ndarray]]:
         """Estimate F0 from a waveform.
 
@@ -157,6 +158,7 @@ class F0Estimator:
             n_bins=c.n_bins,
             voicing_threshold=voicing_threshold,
             interpolate=interpolate,
+            postprocess=postprocess,
         )
         return (f0, voicing) if return_voicing else f0
 

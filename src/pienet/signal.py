@@ -134,6 +134,7 @@ def activations_to_f0(
     n_bins: int = 351,
     voicing_threshold: Optional[float] = None,
     interpolate: bool = False,
+    postprocess: bool = False,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """Decode network outputs into an F0 contour.
 
@@ -188,8 +189,38 @@ def activations_to_f0(
         f0 = np.exp(log_centers[idx] + shift * step).astype(np.float32)
 
     f0 = np.where(voiced, f0, 0.0).astype(np.float32)
+  
+    if postprocess:
+        f0 = medfilt3_contour(voiced, f0)
+
     return f0, voicing.astype(np.float32)
 
+
+# --------------------------------------------------------------------------- #
+# Post-processing
+# --------------------------------------------------------------------------- #
+
+def medfilt3_contour(voiced: np.ndarray, f0: np.ndarray) -> np.ndarray:
+    # Apply 3-tap median filter to voiced segments.
+    # For first and last samples, disregard the edge cases.
+    f0_filtered = np.copy(f0)
+    delta_v = np.diff(np.float32(np.concatenate([[0], voiced, [0]])))
+    Istart = np.where(delta_v == 1)[0]
+    Istop = np.where(delta_v == -1)[0]
+    if f0_filtered.shape[0] > 2 and Istart.shape[0] > 0:
+        for i_start, i_stop in zip(Istart, Istop):
+            seglen = i_stop - i_start
+            if seglen > 2:  # Do filtering for segments that are at least 3 frames.
+                for i in range(seglen):
+                    j = i + i_start
+                    if i == 0:
+                        f0_filtered[j] = np.median(f0[j:j+3])
+                    elif i == seglen - 1:
+                        f0_filtered[j] = np.median(f0[j-2:j+1])
+                    else:
+                        f0_filtered[j] = np.median(f0[j-1:j+2])
+
+    return f0_filtered
 
 # --------------------------------------------------------------------------- #
 # Audio I/O
